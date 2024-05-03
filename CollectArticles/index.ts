@@ -36,7 +36,7 @@ const getTodaysArticles = async (articles: any[]) => {
   return todaysArticles;
 };
 
-export const handler = async (event: any): Promise<void> => {
+export const handler = async (event: any) => {
   const res = await fetch("https://techcrunch.com/feed/");
   const text = await res.text();
 
@@ -46,7 +46,9 @@ export const handler = async (event: any): Promise<void> => {
   const todaysArticles = await getTodaysArticles(articles);
   console.log(todaysArticles);
 
-  if (todaysArticles.length === 0) return;
+  if (todaysArticles.length === 0) {
+    console.log("No Artciles");
+  }
 
-  return;
+  console.log("todaysArticles: ", JSON.stringify(todaysArticles));
 };
