@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for RSS Summarizer
+
+Parameters:
+  accountId:
+    Description: AWS Account ID
+    Type: String
+
+Globals:
+  Function:
+    Timeout: 60
+
+Resources:
+  CollectArticles:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: CollectArticles
+      CodeUri: CollectArticles/
+      Role: !Sub "arn:aws:iam::${accountId}:role/CollectArticlesLambdaRole"
+      PackageType: Image
+      Architectures:
+        - x86_64
+      ImageUri: !Sub "${accountId}.dkr.ecr.ap-northeast-1.amazonaws.com/collect-articles:latest"
+      Events:
+        ScheduledFunction:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: rate(1 day)
+            ScheduleExpressionTimezone: UTC
+            State: ENABLED
+            Name: RSSFeedSchedular
+            Description: CollectArticles invoker once a day
+
+  CollectArticlesLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CollectArticles}
+      RetentionInDays: 7
+
+Outputs:
+  CollectArticles:
+    Description: "CollectArticles Lambda Funtion ARN"
+    Value: !GetAtt CollectArticles.Arn

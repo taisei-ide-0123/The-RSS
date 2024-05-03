@@ -1,6 +1,7 @@
 FROM public.ecr.aws/lambda/nodejs:20 as builder
 WORKDIR /usr/app
-COPY package.json index.ts  ./
+ARG LAMBDA_DIR
+COPY ${LAMBDA_DIR}/package.json ${LAMBDA_DIR}/index.ts  ./
 RUN npm install
 RUN npm run build
 
