@@ -18,10 +18,11 @@ Resources:
       FunctionName: CollectArticles
       CodeUri: CollectArticles/
       Role: !Sub "arn:aws:iam::${accountId}:role/CollectArticlesLambdaRole"
-      PackageType: Image
       Architectures:
         - x86_64
-      ImageUri: !Sub "${accountId}.dkr.ecr.ap-northeast-1.amazonaws.com/collect-articles:latest"
+      Runtime: nodejs20.x
+      Handler: index.handler
+      MemorySize: 256
       Events:
         ScheduledFunction:
           Type: ScheduleV2

@@ -2,19 +2,10 @@
   "name": "the-rss",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
-  "type": "module",
-  "scripts": {
-    "build": "esbuild index.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js"
-  },
+  "main": "index.mjs",
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.137",
-    "@types/xml2js": "^0.4.14",
-    "esbuild": "^0.20.2"
-  },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
     "xml2js": "^0.6.2"

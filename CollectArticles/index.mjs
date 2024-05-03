@@ -1,11 +1,6 @@
 import { parseStringPromise } from "xml2js";
 import * as cheerio from "cheerio";
 
-interface Article {
-  title: string;
-  content: string;
-}
-
 const isToday = (date, now) => {
   return (
     date.getDate() === now.getDate() &&
@@ -14,10 +9,10 @@ const isToday = (date, now) => {
   );
 };
 
-const getTodaysArticles = async (articles: any[]) => {
+const getTodaysArticles = async (articles) => {
   const now = new Date();
 
-  const todaysArticles: Array<Article> = [];
+  const todaysArticles = [];
   for (const article of articles) {
     const date = new Date(article.pubDate[0]);
 
@@ -28,15 +23,15 @@ const getTodaysArticles = async (articles: any[]) => {
     const $ = cheerio.load(text);
 
     todaysArticles.push({
-      title: article.title[0] as string,
-      content: $("article").text() as string,
+      title: article.title[0],
+      content: $("article").text(),
     });
   }
 
   return todaysArticles;
 };
 
-export const handler = async (event: any) => {
+export const handler = async (event) => {
   const res = await fetch("https://techcrunch.com/feed/");
   const text = await res.text();
 
