@@ -1,5 +1,11 @@
+import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 import { parseStringPromise } from "xml2js";
 import * as cheerio from "cheerio";
+import ULID from "ulid";
+
+const sqsClient = new SQSClient();
+
+const QUEUE_URL = process.env["QUEUE_URL"];
 
 const isToday = (date, now) => {
   return (
@@ -31,6 +37,17 @@ const getTodaysArticles = async (articles) => {
   return todaysArticles;
 };
 
+const sendMessageToQueue = async (body) => {
+  const sendCommand = new SendMessageCommand({
+    QueueUrl: QUEUE_URL,
+    MessageBody: JSON.stringify(body),
+    MessageGroupId: ULID.ulid(),
+    MessageDeduplicationId: ULID.ulid(),
+  });
+
+  await sqsClient.send(sendCommand);
+};
+
 export const handler = async (event) => {
   const res = await fetch("https://techcrunch.com/feed/");
   const text = await res.text();
@@ -39,11 +56,14 @@ export const handler = async (event) => {
   const articles = feed.rss.channel[0].item;
 
   const todaysArticles = await getTodaysArticles(articles);
-  console.log(todaysArticles);
 
   if (todaysArticles.length === 0) {
     console.log("No Artciles");
   }
 
   console.log("todaysArticles: ", JSON.stringify(todaysArticles));
+
+  for (const todaysArticle of todaysArticles) {
+    await sendMessageToQueue(todaysArticle);
+  }
 };

@@ -23,6 +23,9 @@ Resources:
       Runtime: nodejs20.x
       Handler: index.handler
       MemorySize: 256
+      Environment:
+        Variables:
+          QUEUE_URL: !Ref ArticlesQueue
       Events:
         ScheduledFunction:
           Type: ScheduleV2
@@ -39,7 +42,41 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${CollectArticles}
       RetentionInDays: 7
 
+  SummarizeArticle:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: SummarizeArticle
+      CodeUri: SummarizeArticle
+      Role: !Sub "arn:aws:iam::${accountId}:role/SummarizeArticleLambdaRole"
+      Architectures:
+        - x86_64
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ArticlesQueue.Arn
+            BatchSize: 1
+            Enabled: true
+
+  SummarizeArticleLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${SummarizeArticle}
+      RetentionInDays: 7
+
+  ArticlesQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      FifoQueue: true
+      QueueName: ArticlesQueue.fifo
+      VisibilityTimeout: 60
+
 Outputs:
   CollectArticles:
     Description: "CollectArticles Lambda Funtion ARN"
     Value: !GetAtt CollectArticles.Arn
+  SummarizeArticle:
+    Description: "SummarizeArticle Lambda Function ARN"
+    Value: !GetAtt SummarizeArticle.Arn

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sam deploy --parameter-overrides accountId=$AWS_ACCOUNT_ID
+sam build
+sam deploy --no-confirm-changeset --parameter-overrides accountId=$AWS_ACCOUNT_ID
