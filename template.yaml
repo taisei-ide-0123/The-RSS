@@ -9,6 +9,9 @@ Parameters:
   openaiApiKey:
     Description: OPENAI API KEY
     Type: String
+  slackChannelUrl:
+    Description: Slack Channel URL
+    Type: String
 
 Globals:
   Function:
@@ -58,6 +61,7 @@ Resources:
       Environment:
         Variables:
           OPENAI_API_KEY: !Ref openaiApiKey
+          SLACK_CHANNEL_URL: !Ref slackChannelUrl
       Events:
         SQSEvent:
           Type: SQS

@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 
 const OPEANAI_API_KEY = process.env["OPEANAI_API_KEY"];
+const SLACK_CHANNEL_URL = process.env["SLACK_CHANNEL_URL"];
 
 const openai = new OpenAI({
   apiKey: OPEANAI_API_KEY,
@@ -40,6 +41,27 @@ const summarizeContent = async (prompt) => {
   return completion.choices[0].message.content;
 };
 
+const formatSummarization = (title, summarizedContent) => {
+  const formattedSummarization = `タイトル:
+  ${title}
+
+  記事要約:
+  ${summarizedContent}`;
+
+  return formattedSummarization;
+};
+
+const sendMessageToSlack = async (title, summarizedContent) => {
+  const headers = { "Content-type": "application/json" };
+  const data = { text: formatSummarization(title, summarizedContent) };
+
+  await fetch(SLACK_CHANNEL_URL, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+};
+
 export const handler = async (event) => {
   console.log(JSON.stringify(event, null, 2));
 
@@ -47,4 +69,6 @@ export const handler = async (event) => {
 
   const prompt = makePrompt(article.content);
   const summarizedContent = await summarizeContent(prompt);
+
+  await sendMessageToSlack(article.title, summarizedContent);
 };
