@@ -30,7 +30,7 @@ const getTodaysArticles = async (articles) => {
 
     todaysArticles.push({
       title: article.title[0],
-      content: $("article").text(),
+      content: $("article").children().next().text(),
       url: article.link[0],
     });
   }
