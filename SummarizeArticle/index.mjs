@@ -41,9 +41,12 @@ const summarizeContent = async (prompt) => {
   return completion.choices[0].message.content;
 };
 
-const formatSummarization = (title, summarizedContent) => {
+const formatSummarization = (article, summarizedContent) => {
   const formattedSummarization = `タイトル:
-  ${title}
+  ${article.title}
+
+  URL:
+  ${article.url}
 
   記事要約:
   ${summarizedContent}`;
@@ -51,9 +54,9 @@ const formatSummarization = (title, summarizedContent) => {
   return formattedSummarization;
 };
 
-const sendMessageToSlack = async (title, summarizedContent) => {
+const sendMessageToSlack = async (article, summarizedContent) => {
   const headers = { "Content-type": "application/json" };
-  const data = { text: formatSummarization(title, summarizedContent) };
+  const data = { text: formatSummarization(article, summarizedContent) };
 
   await fetch(SLACK_CHANNEL_URL, {
     method: "POST",
@@ -70,5 +73,5 @@ export const handler = async (event) => {
   const prompt = makePrompt(article.content);
   const summarizedContent = await summarizeContent(prompt);
 
-  await sendMessageToSlack(article.title, summarizedContent);
+  await sendMessageToSlack(article, summarizedContent);
 };
