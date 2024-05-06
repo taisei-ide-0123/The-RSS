@@ -6,6 +6,9 @@ Parameters:
   accountId:
     Description: AWS Account ID
     Type: String
+  openaiApiKey:
+    Description: OPENAI API KEY
+    Type: String
 
 Globals:
   Function:
@@ -52,6 +55,9 @@ Resources:
         - x86_64
       Runtime: nodejs20.x
       Handler: index.handler
+      Environment:
+        Variables:
+          OPENAI_API_KEY: !Ref openaiApiKey
       Events:
         SQSEvent:
           Type: SQS
