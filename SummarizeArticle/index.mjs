@@ -43,13 +43,13 @@ const summarizeContent = async (prompt) => {
 
 const formatSummarization = (article, summarizedContent) => {
   const formattedSummarization = `タイトル:
-  ${article.title}
+${article.title}
 
-  URL:
-  ${article.url}
+URL:
+${article.url}
 
-  記事要約:
-  ${summarizedContent}`;
+記事要約:
+${summarizedContent}`;
 
   return formattedSummarization;
 };
